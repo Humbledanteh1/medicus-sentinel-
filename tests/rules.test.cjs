@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/i);
+const match = html.match(/<script>([\s\S]*?)<\/script>/i);
 assert.ok(match, 'index.html should contain the application script');
 
 // Load the real in-page case definitions and rule functions without running DOM setup.
