@@ -15,11 +15,11 @@ assert.notEqual(domSetup, -1, 'expected UI initialization marker in index.html')
 const context = {};
 vm.runInNewContext(
   appScript.slice(0, domSetup) +
-  '\nglobalThis.__api = { cases, runCase, sentinel, guardian, investigator, evidence, adversary, judge, metric };',
+  '\nglobalThis.__api = { cases, runCase, sentinel, guardian, investigator, evidence, adversary, judge, metric, auditCase, getAuditLog: () => auditLog, RULE_VERSION };',
   context,
   { filename: 'index.html#app-script' }
 );
-const { cases, runCase, sentinel, metric } = context.__api;
+const { cases, runCase, sentinel, metric, auditCase, getAuditLog, RULE_VERSION } = context.__api;
 
 test('case library contains twelve uniquely identified fictional cases', () => {
   assert.equal(cases.length, 12);
@@ -119,4 +119,18 @@ test('missing stability window is treated as unverifiable', () => {
   c.data.stability = null;
   assert.equal(sentinel(c).flag, true);
   assert.ok(sentinel(c).notes.some(n => /stability/i.test(n)));
+});
+
+test('audit trail records each agent output with case, version, timestamp, and synthetic-only marker', () => {
+  const c = cases.find(item => item.id === 'SYN-001');
+  const output = runCase(c);
+  const before = getAuditLog().length;
+  const events = auditCase(c, output);
+  assert.equal(events.length, 6);
+  assert.equal(getAuditLog().length, before + 6);
+  assert.ok(events.every(e => e.caseId === c.id));
+  assert.ok(events.every(e => e.ruleVersion === RULE_VERSION));
+  assert.ok(events.every(e => e.syntheticOnly === true));
+  assert.ok(events.every(e => Number.isFinite(Date.parse(e.timestamp))));
+  assert.ok(events.every(e => Array.isArray(e.reasons)));
 });
