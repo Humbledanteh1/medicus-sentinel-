@@ -11,7 +11,7 @@ An early-stage, browser-based research prototype for laboratory specimen quality
 3. Inspect agent outputs, disagreements, and metrics.
 4. Export a JSON report or agent-metrics CSV.
 
-No build step, server, account, API key, or external dependency is required.
+No build step, server, account, API key, or external browser dependency is required. To run regression tests, install Node.js 18+ and run `npm test`.
 
 ## Included
 - Specimen Sentinel: identity, tube, volume, stability, H-index, clot, QC, freshness, and system-availability checks.
@@ -31,4 +31,4 @@ No build step, server, account, API key, or external dependency is required.
 - Human review is mandatory in any future operational design.
 - Real deployment requires validated procedures, privacy/security review, auditability, risk management, monitoring, and regulatory assessment. Human review alone does not determine regulatory status.
 
-See [`docs/VALIDATION_PLAN.md`](docs/VALIDATION_PLAN.md) for a proposed validation pathway.
+## Developer checks\n\nRun automated regression tests with `npm test` (Node.js 18+). See [`docs/TESTING.md`](docs/TESTING.md) for test coverage and limitations.\n\nSee [`docs/VALIDATION_PLAN.md`](docs/VALIDATION_PLAN.md) for a proposed validation pathway.
