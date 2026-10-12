@@ -3,7 +3,7 @@
 An early-stage, browser-based research prototype for laboratory specimen quality review and transparent multi-agent simulation.
 
 ## Status
-**Prototype only — not for clinical use.** The app uses fictional cases and deterministic heuristics. Its tournament measures the behavior of implemented rules, not the clinical competence of real AI models.
+**Prototype only — not for clinical use.** The app uses fictional cases and deterministic heuristics. Version 0.4 adds an in-memory, version-tagged audit trail for synthetic agent outputs. Its tournament measures the behavior of implemented rules, not the clinical competence of real AI models.
 
 ## Quick start
 1. Open `index.html` in a modern browser.
@@ -22,7 +22,8 @@ No build step, server, account, API key, or external browser dependency is requi
 - Judge: conservative synthesis that preserves hard stops and does not use majority vote to override safety.
 - Twelve hand-authored fictional cases and a repeatable tournament.
 - Per-agent confusion-matrix-style metrics against synthetic reference labels.
-- JSON and CSV export.
+- JSON and CSV export, including the current in-memory audit trail in the JSON report.
+- Versioned in-memory audit events for each agent output; these are demonstration logs, not persistent or tamper-evident records.
 
 ## Safety and governance
 - Never enter patient-identifiable or real clinical information.
