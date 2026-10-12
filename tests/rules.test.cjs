@@ -74,3 +74,49 @@ test('same case produces repeatable agent outputs', () => {
   const c = cases.find(c => c.id === 'SYN-003');
   assert.equal(JSON.stringify(runCase(c)), JSON.stringify(runCase(c)));
 });
+
+test('tube mismatch, low volume, QC failure, LIS outage, and stale data each trigger Sentinel', () => {
+  for (const id of ['SYN-003', 'SYN-005', 'SYN-009', 'SYN-007', 'SYN-012']) {
+    const c = cases.find(item => item.id === id);
+    assert.equal(sentinel(c).flag, true, id + ' should trigger a configured safety check');
+  }
+});
+
+test('elapsed time exactly at the configured stability boundary is not over the limit', () => {
+  const base = cases.find(item => item.id === 'SYN-008');
+  const c = JSON.parse(JSON.stringify(base));
+  c.data.elapsed = c.data.stability;
+  assert.equal(sentinel(c).flag, false);
+});
+
+test('volume exactly at the configured minimum is not below the minimum', () => {
+  const base = cases.find(item => item.id === 'SYN-008');
+  const c = JSON.parse(JSON.stringify(base));
+  c.data.volume = c.data.minVolume;
+  assert.equal(sentinel(c).flag, false);
+});
+
+test('missing identity fields are treated as a hard stop', () => {
+  const base = cases.find(item => item.id === 'SYN-008');
+  const c = JSON.parse(JSON.stringify(base));
+  c.data.patient = '';
+  assert.equal(sentinel(c).flag, true);
+  assert.ok(sentinel(c).notes.some(n => /identity/i.test(n)));
+});
+
+test('missing or non-passing QC cannot silently pass', () => {
+  const base = cases.find(item => item.id === 'SYN-008');
+  for (const qc of [null, 'unknown', 'fail']) {
+    const c = JSON.parse(JSON.stringify(base));
+    c.data.qc = qc;
+    assert.equal(sentinel(c).flag, true, 'QC=' + qc + ' should not pass');
+  }
+});
+
+test('missing stability window is treated as unverifiable', () => {
+  const base = cases.find(item => item.id === 'SYN-008');
+  const c = JSON.parse(JSON.stringify(base));
+  c.data.stability = null;
+  assert.equal(sentinel(c).flag, true);
+  assert.ok(sentinel(c).notes.some(n => /stability/i.test(n)));
+});
